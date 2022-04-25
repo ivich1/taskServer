@@ -32,12 +32,12 @@ public class TaskController {
 
     //https://www.baeldung.com/spring-resttemplate-post-json
     //тут ошибка
-    @PostMapping("/post")
-    public ResponseEntity acceptTsk(
+    @PostMapping(
+            value = "/post", consumes = "application/json", produces = "application/json")
+    public AcceptTaskDTO acceptTsk(
             @RequestBody AcceptTaskDTO acceptTaskDTO
             ){
-        acceptTaskService.saveTask(acceptTaskDTO);
-        return ResponseEntity.ok("ответ принят");
+        return acceptTaskService.saveTask(acceptTaskDTO);
     }
 
 }

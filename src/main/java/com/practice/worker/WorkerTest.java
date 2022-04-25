@@ -3,6 +3,9 @@ package com.practice.worker;
 import com.google.gson.Gson;
 import com.practice.taskServer.data.dto.AcceptTaskDTO;
 import com.practice.taskServer.data.dto.GetTaskDTO;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.BufferedReader;
@@ -34,10 +37,10 @@ public class WorkerTest {
         setConnectionGet();
         //работа, преобразования к отправке
         AcceptTaskDTO res = calculate();
-        //Gson g = new Gson();
-        //String s = g.toJson(res);
+        Gson g = new Gson();
+        String s = g.toJson(res);
         //отправка
-        postAnswer(res);
+        postAnswer(s);
     }
 
     public void setConnectionGet(){
@@ -50,13 +53,19 @@ public class WorkerTest {
         }
     }
 
-    public AcceptTaskDTO postAnswer(AcceptTaskDTO toPost){
+    public String postAnswer(String toPost){
+        //превращение объекта в json
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<String> request = new HttpEntity<String>(toPost, headers);
+
         RestTemplate restTemplate = new RestTemplate();
-        return  restTemplate.postForObject("http://localhost:8080/post", toPost, AcceptTaskDTO.class);
+
+        return  restTemplate.postForObject("http://localhost:8080/post", request, String.class);
     }
 
     //не работает
-    public void postAnswer(String jsonAnswerString){
+    public void postAnswer(String jsonAnswerString, int a){
         try{
             postConnection = (HttpURLConnection) postURL.openConnection();
             postConnection.setRequestMethod("POST");

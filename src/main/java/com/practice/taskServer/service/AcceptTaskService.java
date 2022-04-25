@@ -16,7 +16,7 @@ public class AcceptTaskService {
     @Autowired
     TaskRepository taskRepository;
 
-    public void saveTask(AcceptTaskDTO task){
+    public AcceptTaskDTO saveTask(AcceptTaskDTO task){
         LocalDateTime localDateTime = LocalDateTime.now();//время сейчас
         Date d = Timestamp.valueOf(localDateTime);
 
@@ -26,5 +26,6 @@ public class AcceptTaskService {
         toUpdate.setAcceptTaskTime(d);
         toUpdate.setStatus("done");
         taskRepository.save(toUpdate);
+        return task;
     }
 }
