@@ -24,8 +24,11 @@ dependencies {
 	//web
 	implementation 'org.springframework.boot:spring-boot-starter-mustache'
 
-	//работа с json
+	//json
 	implementation 'com.google.code.gson:gson:2.8.5'
+
+	//date
+	implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.0'
 }
 
 tasks.named('test') {

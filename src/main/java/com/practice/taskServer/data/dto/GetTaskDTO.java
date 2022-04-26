@@ -6,12 +6,12 @@ import com.practice.taskServer.data.entity.TaskEntity;
 public class GetTaskDTO {
 
     public String name;
-    public int number;
+    public long number;
 
     public GetTaskDTO() {
     }
 
-    public GetTaskDTO(String name, int number) {
+    public GetTaskDTO(String name, long number) {
         this.name = name;
         this.number = number;
     }

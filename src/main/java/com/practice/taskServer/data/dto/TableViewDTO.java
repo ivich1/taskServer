@@ -24,7 +24,7 @@ public class TableViewDTO {
         this.id = Integer.toString(source.getId());
         this.name = source.getName();
         this.worker = source.getWorker();
-        this.number = Integer.toString(source.getNumber());
+        this.number = Long.toString(source.getNumber());
         this.isPrime = Boolean.toString(source.isPrime());
         this.status = source.getStatus();
     }

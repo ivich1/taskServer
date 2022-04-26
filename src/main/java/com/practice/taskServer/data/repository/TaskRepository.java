@@ -5,5 +5,5 @@ import org.springframework.data.repository.CrudRepository;
 
 public interface TaskRepository extends CrudRepository<TaskEntity, Integer> {
 
-    TaskEntity findByNumber(int number);
+    TaskEntity findByNumber(long number);
 }

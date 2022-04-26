@@ -9,10 +9,28 @@
 </head>
     <body>
         <div>Список Заданий</div>
-        {{#tasks}}
+
             <div>
-                <b>{{id}} {{name}} {{worker}} {{number}} {{isPrime}} {{status}}</b>
+                <table>
+                    <tr>
+                        <td>id</td>
+                        <td>task name</td>
+                        <td>worker</td>
+                        <td>number</td>
+                        <td>isPrime</td>
+                        <td>status</td>
+                    </tr>
+                    {{#tasks}}
+                    <tr>
+                        <td>{{id}}</td>
+                        <td>{{name}}</td>
+                        <td>{{worker}}</td>
+                        <td>{{number}}</td>
+                        <td>{{isPrime}}</td>
+                        <td>{{status}}</td>
+                    </tr>
+                    {{/tasks}}
+                </table>
             </div>
-        {{/tasks}}
     </body>
 </html>

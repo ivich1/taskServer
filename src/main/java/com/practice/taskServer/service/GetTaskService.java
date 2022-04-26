@@ -38,7 +38,7 @@ public class GetTaskService {
     //создает запись задания в таблице
     private GetTaskDTO createTask(){
         TaskEntity taskEntity = new TaskEntity();
-        taskEntity.setNumber(getNextIntToCheck());
+        taskEntity.setNumber(getNextNumToCheck());
         taskEntity.setName(getTaskName(taskEntity.getNumber()));//чтоб не было колизии
         taskEntity.setStatus("inWork");
         LocalDateTime localDateTime = LocalDateTime.now();//время сейчас
@@ -52,15 +52,28 @@ public class GetTaskService {
     //выдает число на проверку, работает приметивно можно развить
     //использует число
     //добавляет случайную величину к нему и отправляет результат
-    private int toCheck = 1;
-    private int getNextIntToCheck(){
+    private long toCheck = (long) (binaryPower( 2.0, Long.parseLong("2344164244")) - 2);
+    private long getNextNumToCheck(){
         Random random = new Random();
-        toCheck += random.nextInt(1000 + 1);//чтоб 0 не падал
+        //toCheck += random.nextInt(1000 + 1);//чтоб 0 не падал
+        toCheck += 1;
         return toCheck;
     }
 
+    double binaryPower(double b, long e) {
+        double v = 1d;
+        while(e > 0) {
+            if((e & 1) != 0) {
+                v *= b;
+            }
+            b *= b;
+            e >>= 1;
+        }
+        return v;
+    }
+
     //устанвливает названиек задания по номеру
-    private String getTaskName(int i){
+    private String getTaskName(long i){
         return "task" + i;
     }
 

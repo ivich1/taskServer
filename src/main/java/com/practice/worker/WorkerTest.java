@@ -8,113 +8,77 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 
 public class WorkerTest {
-    //создание коннекта на подключение
-    private final URL getURL = new URL("http://localhost:8080/get");
-    private final URL postURL = new URL("http://localhost:8080/post");
-    private HttpURLConnection getConnection;
-    private HttpURLConnection postConnection;
+    //url, по идее должно быть в пропах, но пусть будут тут
+    private final String getURL = "http://localhost:8080/get";
+    private final String postURL = "http://localhost:8080/post";
 
     private final String workerName;
+    private int workCount;//кол-во оставшихся возможностей поработать
 
-    public WorkerTest() throws MalformedURLException {
+    public WorkerTest() {
         workerName = "workerTest";
+        this.workCount = -1;
     }
-    public WorkerTest(String workerName) throws MalformedURLException {
+
+    public WorkerTest(String workerName){
         this.workerName = workerName;
+        this.workCount = -1;
     }
 
-    public void work(){
-        //соединение
-        setConnectionGet();
-        //работа, преобразования к отправке
-        AcceptTaskDTO res = calculate();
-        Gson g = new Gson();
-        String s = g.toJson(res);
-        //отправка
-        postAnswer(s);
+    public WorkerTest(String workerName, int workCount){
+        this.workerName = workerName;
+        this.workCount = workCount;
     }
 
-    public void setConnectionGet(){
-        try{
-            getConnection = (HttpURLConnection) getURL.openConnection();
-            getConnection.setRequestMethod("GET");
-            getConnection.setRequestProperty("Content-Type", "application/json");
-        }catch (Exception e){
-            //тут ошибка
+    public boolean work(){
+        if(workCount == 0){
+            return false;
         }
+        workCount --;
+        //получение
+        GetTaskDTO task = getTask();
+        //вычисление
+        AcceptTaskDTO ans = calculate(task);
+        //отправка
+        postAnswer(ans);
+
+        return true;
     }
 
-    public String postAnswer(String toPost){
+    //получение задания
+    private GetTaskDTO getTask(){
+        RestTemplate restTemplate = new RestTemplate();
+        GetTaskDTO task = restTemplate.getForObject(getURL, GetTaskDTO.class);
+        return task;
+    }
+
+    //отправка объекта
+    private String postAnswer(AcceptTaskDTO toPost){
         //превращение объекта в json
+        Gson g = new Gson();
+        String jsonToPost = g.toJson(toPost);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<String> request = new HttpEntity<String>(toPost, headers);
+        HttpEntity<String> request = new HttpEntity<String>(jsonToPost, headers);
 
         RestTemplate restTemplate = new RestTemplate();
-
-        return  restTemplate.postForObject("http://localhost:8080/post", request, String.class);
+        return  restTemplate.postForObject(postURL, request, String.class);
     }
 
-    //не работает
-    public void postAnswer(String jsonAnswerString, int a){
-        try{
-            postConnection = (HttpURLConnection) postURL.openConnection();
-            postConnection.setRequestMethod("POST");
-            postConnection.setRequestProperty("Content-Type", "application/json");
-            postConnection.setRequestProperty("Accept", "application/json");
-            postConnection.setDoOutput(true);
-            try(OutputStream os = postConnection.getOutputStream()) {
-                byte[] input = jsonAnswerString.getBytes("utf-8");
-                os.write(input, 0, input.length);
-                os.flush();
-            }
-        }catch (Exception e){
-            //тут ошибка
-        }
-    }
-
-    public AcceptTaskDTO calculate(){
-        var info = getInfo();
-        GetTaskDTO task = toTaskDTO(info);
+    private AcceptTaskDTO calculate(GetTaskDTO task){
         boolean isPrime = isPrime(task.number);
         AcceptTaskDTO answer =  createAnswer(task.number, isPrime);
         return answer;
     }
 
-    //преобразует stream в строку(json строку)
-    private String getInfo(){
-        try (final BufferedReader in = new BufferedReader(new InputStreamReader(getConnection.getInputStream()))) {
-            String inputLine;
-            final StringBuilder content = new StringBuilder();
-            while ((inputLine = in.readLine()) != null) {
-                content.append(inputLine);
-            }
-            return content.toString();
-        } catch (final Exception ex) {
-            ex.printStackTrace();
-            return "";
-        }
-    }
+    //считает простое ли число
+    private boolean isPrime(long number){
+        long n = number/2;
+        for(long i = 2; i< n; i++){
 
-    //преобразует json строку в класс GetTaskDTO
-    private GetTaskDTO toTaskDTO(String jsonString){
-        Gson g = new Gson();
-        GetTaskDTO task = g.fromJson(jsonString, GetTaskDTO.class);
-        return task;
-    }
-
-    public boolean isPrime(int number){
-        int n = number/2;
-        for(int i = 2; i< n; i++){
             if (number % i == 0){
                 return false;
             }
@@ -122,12 +86,21 @@ public class WorkerTest {
         return true;
     }
 
-    private AcceptTaskDTO createAnswer(int number, boolean isPrime){
+    //собирает ответ
+    private AcceptTaskDTO createAnswer(long number, boolean isPrime){
         AcceptTaskDTO answer = new AcceptTaskDTO();
-        answer.name = "test";
+        answer.name = "task" + number;
         answer.worker = this.workerName;
         answer.number = number;
         answer.isPrime = isPrime;
         return answer;
+    }
+
+    public int getWorkCount() {
+        return workCount;
+    }
+
+    public String getWorkerName() {
+        return workerName;
     }
 }

@@ -13,7 +13,7 @@ public class TaskEntity {
     private int id;
     private String name;//название задания
     private String worker;//исполнитель
-    private int number;//число для проверки
+    private long number;//число для проверки
     private boolean isPrime;//результат
     private String status;//статус задания
 
@@ -57,11 +57,11 @@ public class TaskEntity {
         this.worker = worker;
     }
 
-    public int getNumber() {
+    public long getNumber() {
         return number;
     }
 
-    public void setNumber(int number) {
+    public void setNumber(long number) {
         this.number = number;
     }
 
