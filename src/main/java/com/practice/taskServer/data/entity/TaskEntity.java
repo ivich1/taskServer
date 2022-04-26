@@ -3,6 +3,7 @@ package com.practice.taskServer.data.entity;
 import com.practice.taskServer.data.dto.AcceptTaskDTO;
 
 import javax.persistence.*;
+import java.math.BigInteger;
 import java.util.Date;
 
 @Entity
@@ -13,7 +14,7 @@ public class TaskEntity {
     private int id;
     private String name;//название задания
     private String worker;//исполнитель
-    private long number;//число для проверки
+    private String number;//число для проверки, чтоб hibernate е помер
     private boolean isPrime;//результат
     private String status;//статус задания
 
@@ -57,12 +58,12 @@ public class TaskEntity {
         this.worker = worker;
     }
 
-    public long getNumber() {
-        return number;
+    public BigInteger getNumber() {
+        return new BigInteger(this.number);
     }
 
-    public void setNumber(long number) {
-        this.number = number;
+    public void setNumber(BigInteger number) {
+        this.number = number.toString();
     }
 
     public boolean isPrime() {

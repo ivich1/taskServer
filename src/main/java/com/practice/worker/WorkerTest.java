@@ -8,6 +8,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.web.client.RestTemplate;
 
+import java.math.BigInteger;
 import java.net.HttpURLConnection;
 
 public class WorkerTest {
@@ -75,11 +76,10 @@ public class WorkerTest {
     }
 
     //считает простое ли число
-    private boolean isPrime(long number){
-        long n = number/2;
-        for(long i = 2; i< n; i++){
-
-            if (number % i == 0){
+    private boolean isPrime(BigInteger number){
+        BigInteger n = number.divide(BigInteger.TWO);
+        for(BigInteger i = BigInteger.TWO; i.compareTo(n) == -1; i.add(BigInteger.ONE)){
+            if (number.mod(i) == BigInteger.ZERO){
                 return false;
             }
         }
@@ -87,7 +87,7 @@ public class WorkerTest {
     }
 
     //собирает ответ
-    private AcceptTaskDTO createAnswer(long number, boolean isPrime){
+    private AcceptTaskDTO createAnswer(BigInteger number, boolean isPrime){
         AcceptTaskDTO answer = new AcceptTaskDTO();
         answer.name = "task" + number;
         answer.worker = this.workerName;
